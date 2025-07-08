@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Go URL Shortener</title>
+  <style>
+    body {
+      background-color: #f0f4f8;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 400px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .output {
+      margin-top: 20px;
+      color: #27ae60;
+      font-weight: bold;
+      word-break: break-all;
+    }
+
+    .error {
+      color: #e74c3c;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Go URL Shortener</h1>
+    <input type="text" id="longUrl" placeholder="Enter long URL..." />
+    <button onclick="shortenUrl()">Shorten</button>
+    <div class="output" id="shortUrl"></div>
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <script>
+    async function shortenUrl() {
+      const longUrl = document.getElementById('longUrl').value;
+      const shortUrlDiv = document.getElementById('shortUrl');
+      const errorDiv = document.getElementById('errorMsg');
+      shortUrlDiv.textContent = '';
+      errorDiv.textContent = '';
+
+      if (!longUrl) {
+        errorDiv.textContent = 'Please enter a URL.';
+        return;
+      }
+
+      try {
+        const response = await fetch('/create-short-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ long_url: longUrl })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.short_url) {
+          shortUrlDiv.innerHTML = `Short URL: <a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
+        } else {
+          errorDiv.textContent = data.message || 'Failed to shorten URL.';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Error connecting to the server.';
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>

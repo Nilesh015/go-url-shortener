@@ -9,10 +9,9 @@ import (
 
 func main() {
 	r := gin.Default()
+	r.LoadHTMLGlob("templates/*")
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Welcome to the URL Shortener API",
-		})
+		c.HTML(200, "index.html", nil)
 	})
 
 	r.POST("/create-short-url", func(c *gin.Context) {
